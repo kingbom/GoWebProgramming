@@ -8,9 +8,10 @@
 
  func main(){
 	  router := mux.NewRouter();
-	  router.HandleFunc("/", index).Methods("GET")
-	  router.HandleFunc("/login", login).Methods("GET")
-	  router.HandleFunc("/signup", signup).Methods("GET")
+	  router.HandleFunc("/", index)
+	  router.HandleFunc("/login", login)
+	  router.HandleFunc("/signup", signup)
+	  router.HandleFunc("/file", file)
 	  http.ListenAndServe(":8080", router) 
  }
 
@@ -24,6 +25,10 @@
 
 func signup(w http.ResponseWriter, req *http.Request){
 	http.ServeFile(w, req, "signup.html")
+}
+
+func file(w http.ResponseWriter, req *http.Request){
+	http.ServeFile(w, req, "file.txt")
 }
 
  func getUser(w http.ResponseWriter, req *http.Request){
