@@ -2,9 +2,10 @@
   
  import(
 	"fmt"
-	"time"
 	"net/http"
+	"database/sql"
 	"github.com/gorilla/mux"
+  _ "github.com/go-sql-driver/mysql"
  )
 
  /*type Product struct {
@@ -12,11 +13,11 @@
 	 Price int
  }*/
 
- type Cookie struct {
+ /*type Cookie struct {
 	 Name string
 	 Value string
 	 Expires time.Time
- }
+ }*/
 
  func main(){
 	  router := mux.NewRouter()
@@ -26,17 +27,39 @@
 	  router.HandleFunc("/file", file)
 	  router.HandleFunc("/product", getProduct)
 	  router.HandleFunc("/upload", upload).Methods("GET")
-	  router.HandleFunc("/upload", uploadHandle).Methods("POST")*/
-	  router.HandleFunc("/cookie", cookie)
+	  router.HandleFunc("/upload", uploadHandle).Methods("POST")
+	  router.HandleFunc("/cookie", cookie)*/
+	  //router.HandleFunc("/db", connectDb)
+
+	  connectDb()
 	  http.ListenAndServe(":8080", router) 
  }
 
- func cookie(w http.ResponseWriter, req *http.Request){
+ func connectDb(){
+	 db, err := sql.Open("msql","root:password@dbname")
+	 if err != nil {
+		fmt.Println(err) 
+	 }
+	 defer db.Close()
+	 rows, err := db.Query("select id,name from product")
+	 if err != nil {
+		fmt.Println(err) 
+	 }
+
+	 for rows.Next(){
+		var id int
+		var name string
+		err=rows.Scan(&id,&name)
+		fmt.Printf("id : %d name : %s \n", id, name)
+	 }
+}
+
+ /*func cookie(w http.ResponseWriter, req *http.Request){
 	expiration := time.Now().Add(time.Hour * 24 * 365)
 	cookie := http.Cookie{Name:"user",Value:"jaruwit", Expires: expiration}
 	http.SetCookie(w, &cookie)
 	fmt.Fprintf(w, "Create cookie")
-}
+}*/
 
  /*func index(w http.ResponseWriter, req *http.Request){
 	 http.ServeFile(w, req, "index.html")
