@@ -2,31 +2,43 @@
   
  import(
 	"fmt"
-	"os"
-	"io"
+	"time"
 	"net/http"
-	"html/template"
 	"github.com/gorilla/mux"
  )
 
- type Product struct {
+ /*type Product struct {
 	 Name string
 	 Price int
+ }*/
+
+ type Cookie struct {
+	 Name string
+	 Value string
+	 Expires time.Time
  }
 
  func main(){
 	  router := mux.NewRouter()
-	  router.HandleFunc("/", index)
+	  /*router.HandleFunc("/", index)
 	  router.HandleFunc("/login", login)
 	  router.HandleFunc("/signup", signup)
 	  router.HandleFunc("/file", file)
 	  router.HandleFunc("/product", getProduct)
 	  router.HandleFunc("/upload", upload).Methods("GET")
-	  router.HandleFunc("/upload", uploadHandle).Methods("POST")
+	  router.HandleFunc("/upload", uploadHandle).Methods("POST")*/
+	  router.HandleFunc("/cookie", cookie)
 	  http.ListenAndServe(":8080", router) 
  }
 
- func index(w http.ResponseWriter, req *http.Request){
+ func cookie(w http.ResponseWriter, req *http.Request){
+	expiration := time.Now().Add(time.Hour * 24 * 365)
+	cookie := http.Cookie{Name:"user",Value:"jaruwit", Expires: expiration}
+	http.SetCookie(w, &cookie)
+	fmt.Fprintf(w, "Create cookie")
+}
+
+ /*func index(w http.ResponseWriter, req *http.Request){
 	 http.ServeFile(w, req, "index.html")
  }
 
@@ -52,7 +64,7 @@ func getProduct(w http.ResponseWriter, req *http.Request){
 	templates.ExecuteTemplate(w, "product.html", product)
 }
 
- func getUser(w http.ResponseWriter, req *http.Request){
+func getUser(w http.ResponseWriter, req *http.Request){
 	params := mux.Vars(req)
 	fmt.Fprintf(w, "user is id %s", params["id"])
 }
@@ -68,6 +80,7 @@ func uploadHandle(w http.ResponseWriter, req *http.Request){
 		fmt.Println(err)
 		return
 	}
+
     fmt.Fprintf(w, "%v", handle.Header)
 	f, err := os.OpenFile("./upload/" + handle.Filename, os.O_CREATE, 0666)
 	if err != nil {
@@ -78,4 +91,5 @@ func uploadHandle(w http.ResponseWriter, req *http.Request){
 	io.Copy(f, file)
 	fmt.Fprintf(w,"Upload complete")
 	http.ServeFile(w, req, "upload.html")	
-}
+}*/
+
