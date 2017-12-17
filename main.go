@@ -2,6 +2,8 @@
   
  import(
 	"fmt"
+	"os"
+	"io"
 	"net/http"
 	"html/template"
 	"github.com/gorilla/mux"
@@ -19,6 +21,8 @@
 	  router.HandleFunc("/signup", signup)
 	  router.HandleFunc("/file", file)
 	  router.HandleFunc("/product", getProduct)
+	  router.HandleFunc("/upload", upload).Methods("GET")
+	  router.HandleFunc("/upload", uploadHandle).Methods("POST")
 	  http.ListenAndServe(":8080", router) 
  }
 
@@ -51,4 +55,27 @@ func getProduct(w http.ResponseWriter, req *http.Request){
  func getUser(w http.ResponseWriter, req *http.Request){
 	params := mux.Vars(req)
 	fmt.Fprintf(w, "user is id %s", params["id"])
+}
+
+func upload(w http.ResponseWriter, req *http.Request){
+	http.ServeFile(w, req, "upload.html")
+}
+
+func uploadHandle(w http.ResponseWriter, req *http.Request){
+	file,handle,err := req.FormFile("file")
+	defer file.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+    fmt.Fprintf(w, "%v", handle.Header)
+	f, err := os.OpenFile("./upload/" + handle.Filename, os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+	fmt.Fprintf(w,"Upload complete")
+	http.ServeFile(w, req, "upload.html")	
 }
