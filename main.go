@@ -36,16 +36,20 @@
  }
 
  func connectDb(){
+	 //connect to db
 	 db, err := sql.Open("msql","root:password@dbname")
 	 if err != nil {
 		fmt.Println(err) 
 	 }
 	 defer db.Close()
+
+	 //query
 	 rows, err := db.Query("select id,name from product")
 	 if err != nil {
 		fmt.Println(err) 
 	 }
 
+	 //loop data
 	 for rows.Next(){
 		var id int
 		var name string
