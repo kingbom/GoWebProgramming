@@ -27,6 +27,10 @@
  }
 
  func login(w http.ResponseWriter, req *http.Request){
+	fmt.Println("method : ", req.Method)
+	req.ParseForm()
+	fmt.Println("username : ", req.Form["username"])
+	fmt.Println("password : ", req.Form["password"]) 
 	http.ServeFile(w, req, "login.html")
 }
 
